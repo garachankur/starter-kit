@@ -1,4 +1,6 @@
-#Project setup steps
+# Project setup steps
+
+## Node version 20 or higher
 
 1. npm i
 
@@ -7,12 +9,12 @@
    - change database connection in knexfile.js and config/env/development.js
 
    - create migration
-     npx knex migrate:make create_user_table
-     npx knex migrate:latest
+     - npx knex migrate:make create_user_table
+     - npx knex migrate:latest
    - Staging Server
-     npx knex migrate:latest --env staging
+     - npx knex migrate:latest --env staging
    - Production
-     npx knex migrate:latest --env production
+     - npx knex migrate:latest --env production
 
 3. Run the server
 
