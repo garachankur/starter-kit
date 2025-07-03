@@ -14,7 +14,6 @@ import { postRequest } from "@/lib/api";
 import apiRoutes from "@/routes/api-route";
 import AlertDialogModel from "@/components/common/alert-dialog";
 import { deleteNoteAction } from "@/actions/notes";
-import { toast } from "sonner";
 import { successToast } from "@/lib/toaster";
 
 const NoteList = (props) => {
