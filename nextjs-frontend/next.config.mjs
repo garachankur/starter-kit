@@ -5,6 +5,7 @@ const nextConfig = {
   env: {
     APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL,
+    PUBLIC_URL: `${process.env.NEXT_PUBLIC_APP_URL}/`,
   },
   images: {
     domains: ["localhost"],

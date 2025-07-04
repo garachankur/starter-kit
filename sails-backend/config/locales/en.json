@@ -8,5 +8,6 @@
 	"User not found": "User not found",
 	"User create successfully": "User create successfully",
 	"User update successfully": "User update successfully",
-	"User not updated": "User not updated"
+	"User not updated": "User not updated",
+	"Invalid password": "Invalid password"
 }
