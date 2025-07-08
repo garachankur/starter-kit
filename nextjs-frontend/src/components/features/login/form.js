@@ -10,11 +10,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from "@/lib/validation";
 import Loader from "@/components/common/loader";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import routePath from "@/routes";
 import Link from "next/link";
 
 export function LoginForm({ className, ...props }) {
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl");
+
   const {
     register,
     handleSubmit,
@@ -31,7 +34,7 @@ export function LoginForm({ className, ...props }) {
       email: data.email,
       password: data.password,
       redirect: false,
-      callbackUrl: `${process.env.APP_URL}${routePath.NOTE}`,
+      callbackUrl: callbackUrl || `${process.env.APP_URL}${routePath.NOTE}`,
     });
 
     if (response?.error) {
