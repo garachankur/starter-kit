@@ -1,5 +1,6 @@
 "use client";
 import { updateProfile } from "@/actions/user";
+import ErrorModel from "@/components/common/error-dialog";
 import Loader from "@/components/common/loader";
 import SuccessModel from "@/components/common/success-dialog";
 import { Button } from "@/components/ui/button";
@@ -28,24 +29,20 @@ const ProfileForm = () => {
     resolver: zodResolver(profileSchema),
   });
 
-  const { uploadedFile, previewUrl, error, isDragActive, isDragAccept, isDragReject, removeFile, clearError, cleanup, getRootProps, getInputProps, open } = useDropzoneHook({
-    accept: { "image/*": [] },
-    maxSize: 5 * 1024 * 1024, // 5MB
-    onFileChange: (file) => {
-      setValue("profile_image", file, { shouldValidate: true });
-    },
-    onFileRemove: () => {
-      setValue("profile_image", null, { shouldValidate: true });
-    },
-    onError: (error) => {
-      console.error("Upload error:", error);
-    },
-  });
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return cleanup;
-  }, [cleanup]);
+  const { uploadedFiles, previewUrl, error, isDragActive, isDragReject, isDragAccept, removeFile, clearError, open, getRootProps, getInputProps } =
+    useDropzoneHook({
+      accept: { "image/*": [] },
+      maxSize: 5 * 1024 * 1024, // 5MB
+      onFileChange: (file) => {
+        setValue("profile_image", file, { shouldValidate: true });
+      },
+      onFileRemove: () => {
+        setValue("profile_image", null, { shouldValidate: true });
+      },
+      onError: (error) => {
+        console.error("Upload error:", error);
+      },
+    });
 
   const getBorderColor = () => {
     if (isDragReject) return "border-red-500";
@@ -79,6 +76,7 @@ const ProfileForm = () => {
 
     const result = await updateProfile(formData);
     if (result?.status) {
+      removeFile();
       await update({ ...session?.user, ...result?.data });
       setSuccessDialog(result?.message);
     }
@@ -99,9 +97,17 @@ const ProfileForm = () => {
                 {...getRootProps()}
                 className={`hover:bg-accent/50 focus-visible:border-ring focus-visible:ring-ring/50 relative flex size-16 items-center justify-center overflow-hidden rounded-full border border-dashed transition-colors outline-none focus-visible:ring-[3px] has-disabled:pointer-events-none has-disabled:opacity-50 has-[img]:border-none ${getBorderColor()} ${getBackgroundColor()}`}
                 onClick={open}
-                aria-label={previewUrl ? "Change image" : "Upload image"}>
+                aria-label={previewUrl ? "Change image" : "Upload image"}
+              >
                 {previewUrl || session?.user?.profile_image ? (
-                  <Image className="size-full object-cover" src={previewUrl || session?.user?.profile_image || "/placeholder.svg"} alt={uploadedFile?.name || "Uploaded image"} width={64} height={64} style={{ objectFit: "cover" }} />
+                  <Image
+                    className="size-full object-cover"
+                    src={previewUrl || session?.user?.profile_image || "/placeholder.svg"}
+                    alt={uploadedFiles?.name || "Uploaded image"}
+                    width={64}
+                    height={64}
+                    style={{ objectFit: "cover" }}
+                  />
                 ) : (
                   <div aria-hidden="true">
                     <CircleUserRoundIcon className="size-4 opacity-60" />
@@ -110,7 +116,13 @@ const ProfileForm = () => {
               </button>
 
               {previewUrl && (
-                <Button type="button" onClick={removeFile} size="icon" className="border-background focus-visible:border-background absolute -top-1 -right-1 size-6 rounded-full border-2 shadow-none" aria-label="Remove image">
+                <Button
+                  type="button"
+                  onClick={() => removeFile()}
+                  size="icon"
+                  className="border-background focus-visible:border-background absolute -top-1 -right-1 size-6 rounded-full border-2 shadow-none"
+                  aria-label="Remove image"
+                >
                   <XIcon className="size-3.5" />
                 </Button>
               )}
@@ -144,6 +156,7 @@ const ProfileForm = () => {
         </div>
       </form>
       {successDialog && <SuccessModel title={successDialog} successDialog={!!successDialog} dialogCloseHandler={dialogCloseHandler} />}
+      {error && <ErrorModel title={error} errorDialog={!!error} dialogCloseHandler={clearError} />}
     </div>
   );
 };

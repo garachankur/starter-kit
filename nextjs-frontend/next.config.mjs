@@ -8,7 +8,21 @@ const nextConfig = {
     PUBLIC_URL: `${process.env.NEXT_PUBLIC_APP_URL}/`,
   },
   images: {
-    domains: ["localhost"],
+    remotePatterns: [
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "1337", // leave empty if using default ports (80 for http, 443 for https)
+        pathname: "/**", // allow all paths
+      },
+      // Add more patterns as needed
+    ],
+  },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "100mb",
+      allowedOrigins: [process.env.NEXT_PUBLIC_APP_URL],
+    },
   },
   async headers() {
     return [
